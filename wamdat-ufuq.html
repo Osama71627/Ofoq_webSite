@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ومضة أفق | WO</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;700;900&family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --orange:#f97316;--orange-dark:#c2410c;--orange-light:#fff4ed;
+  --orange-mid:#fed7aa;--orange-glow:rgba(249,115,22,0.25);
+  --bg:#ffffff;--bg2:#fff8f2;--bg3:#fff4ed;
+  --text:#1a0a00;--text2:#4a3020;--text3:#7a5a40;
+  --border:rgba(249,115,22,0.15);--card-bg:#fffaf6;
+  --card-border:rgba(249,115,22,0.18);--shadow:0 4px 30px rgba(249,115,22,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo','Tajawal',sans-serif;overflow-x:hidden;}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.3;}
+
+/* ── LOADER ── */
+.loader{position:fixed;inset:0;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;transition:opacity .6s,transform .6s;}
+.loader.hide{opacity:0;pointer-events:none;transform:scale(1.02);}
+.loader-logo{height:68px;animation:pulse 1.5s infinite;}
+.loader-name{font-size:2rem;font-weight:900;color:var(--orange);}
+.loader-bar{width:200px;height:3px;background:var(--orange-mid);border-radius:2px;overflow:hidden;}
+.loader-fill{height:100%;background:var(--orange);animation:loadFill 1.8s ease forwards;}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:all .4s;}
+nav.scrolled{background:rgba(255,255,255,.98);border-bottom-color:var(--border);box-shadow:0 2px 20px rgba(249,115,22,.07);padding:10px 48px;}
+.nav-logo img{height:50px;filter:drop-shadow(0 0 8px var(--orange-glow));transition:filter .3s;}
+.nav-logo img:hover{filter:drop-shadow(0 0 18px var(--orange));}
+.nav-right{display:flex;align-items:center;gap:26px;}
+.nav-links{display:flex;gap:30px;list-style:none;}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.9rem;font-weight:600;position:relative;transition:color .3s;}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;right:0;width:0;height:2px;background:var(--orange);transition:width .3s;}
+.nav-links a:hover{color:var(--orange);}
+.nav-links a:hover::after{width:100%;}
+.lang-toggle{display:flex;align-items:center;background:var(--orange-light);border:1.5px solid var(--orange-mid);border-radius:30px;overflow:hidden;padding:3px;}
+.lang-btn{padding:5px 14px;font-family:'Cairo','Montserrat',sans-serif;font-size:.76rem;font-weight:700;border:none;background:transparent;color:var(--orange-dark);cursor:pointer;border-radius:24px;transition:all .3s;}
+.lang-btn.active{background:var(--orange);color:#fff;box-shadow:0 2px 8px var(--orange-glow);}
+.lang-btn:not(.active):hover{background:var(--orange-mid);}
+.nav-cta{background:var(--orange);color:#fff;padding:9px 22px;border:none;font-family:'Cairo',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all .3s;text-decoration:none;white-space:nowrap;}
+.nav-cta:hover{background:var(--orange-dark);transform:scale(1.04);}
+
+/* ── HAMBURGER ── */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:8px;background:none;border:2px solid var(--orange-mid);border-radius:6px;z-index:1200;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--orange);border-radius:2px;transition:all .35s ease;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── MOBILE DRAWER ── */
+.mob-drawer{display:none;position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:1100;flex-direction:column;align-items:stretch;padding:80px 32px 40px;gap:0;transform:translateY(-110%);transition:transform .45s cubic-bezier(.4,0,.2,1);overflow-y:auto;backdrop-filter:blur(20px);}
+.mob-drawer.open{transform:translateY(0);}
+.mob-nav-links{list-style:none;display:flex;flex-direction:column;gap:0;}
+.mob-nav-links li a{display:block;font-size:1.25rem;font-weight:700;color:var(--text2);text-decoration:none;padding:16px 0;border-bottom:1px solid var(--border);text-align:center;transition:color .3s;}
+.mob-nav-links li a:hover{color:var(--orange);}
+.mob-bottom{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:28px;}
+.mob-cta{background:var(--orange);color:#fff;padding:14px 0;font-family:'Cairo',sans-serif;font-weight:700;font-size:1rem;text-decoration:none;text-align:center;width:100%;border-radius:4px;transition:background .3s;}
+.mob-cta:hover{background:var(--orange-dark);}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:100px 80px 80px;background:linear-gradient(135deg,#fff 0%,#fff8f2 55%,#fff4ed 100%);}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 70% 50%,rgba(249,115,22,.09) 0%,transparent 70%),radial-gradient(ellipse 35% 35% at 90% 15%,rgba(249,115,22,.13) 0%,transparent 60%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(249,115,22,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.05) 1px,transparent 1px);background-size:60px 60px;}
+.hero-content{position:relative;z-index:2;max-width:580px;}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;background:var(--orange-light);border:1px solid var(--orange-mid);padding:6px 18px;font-size:.78rem;letter-spacing:.14em;color:var(--orange-dark);margin-bottom:28px;animation:fadeSlideDown .8s .2s both;}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse 1.5s infinite;}
+.hero-title{font-size:clamp(2.8rem,5.5vw,5.2rem);font-weight:900;line-height:1.06;margin-bottom:22px;color:var(--text);animation:fadeSlideDown .8s .4s both;}
+.hero-title .highlight{color:var(--orange);position:relative;display:inline-block;}
+.hero-title .highlight::after{content:'';position:absolute;bottom:4px;left:0;right:0;height:3px;background:var(--orange);transform:scaleX(0);animation:scaleIn .6s 1.2s forwards;}
+.hero-sub{font-size:1.05rem;color:var(--text3);line-height:1.9;margin-bottom:38px;max-width:470px;animation:fadeSlideDown .8s .6s both;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;animation:fadeSlideDown .8s .8s both;}
+.btn-primary{background:var(--orange);color:#fff;padding:13px 34px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.95rem;border:none;cursor:pointer;text-decoration:none;display:inline-block;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all .3s;}
+.btn-primary:hover{background:var(--orange-dark);transform:translateY(-2px);box-shadow:0 8px 28px var(--orange-glow);}
+.btn-outline{background:transparent;color:var(--orange);padding:13px 34px;font-family:'Cairo',sans-serif;font-weight:600;font-size:.95rem;border:1.5px solid var(--orange);cursor:pointer;text-decoration:none;display:inline-block;transition:all .3s;}
+.btn-outline:hover{background:var(--orange);color:#fff;transform:translateY(-2px);}
+
+/* ── HERO STATS — below buttons ── */
+.hero-stats{display:flex;gap:40px;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:1px solid var(--border);animation:fadeSlideUp .8s 1s both;}
+.stat-item{text-align:center;}
+.stat-num{font-size:2rem;font-weight:900;color:var(--orange);line-height:1;}
+.stat-label{font-size:.75rem;color:var(--text3);margin-top:4px;letter-spacing:.04em;}
+
+/* Hero Rings */
+.hero-rings{position:absolute;left:6%;top:50%;transform:translateY(-50%);width:420px;height:420px;}
+.ring{position:absolute;border-radius:50%;border:1px solid rgba(249,115,22,.18);top:50%;left:50%;transform:translate(-50%,-50%);animation:spin 20s linear infinite;}
+.ring:nth-child(1){width:180px;height:180px;border-color:rgba(249,115,22,.45);animation-duration:7s;}
+.ring:nth-child(2){width:280px;height:280px;animation-duration:13s;animation-direction:reverse;}
+.ring:nth-child(3){width:380px;height:380px;animation-duration:21s;}
+.ring:nth-child(4){width:460px;height:460px;animation-duration:29s;animation-direction:reverse;}
+.ring-dot{position:absolute;width:8px;height:8px;background:var(--orange);border-radius:50%;top:0;left:50%;transform:translateX(-50%);box-shadow:0 0 10px var(--orange);}
+.hero-cam-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;display:flex;align-items:center;justify-content:center;}
+.hero-cam-center svg{width:56px;height:56px;}
+.scroll-indicator{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:bounce 2s infinite;z-index:2;}
+.scroll-indicator span{font-size:.68rem;color:var(--text3);letter-spacing:.1em;}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,var(--orange),transparent);}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:1;}
+.section-header{text-align:center;margin-bottom:58px;}
+.section-tag{display:inline-block;color:var(--orange);font-size:.75rem;letter-spacing:.2em;margin-bottom:12px;font-weight:700;}
+.section-title{font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:900;line-height:1.15;color:var(--text);}
+.section-title span{color:var(--orange);}
+.section-line{width:56px;height:3px;background:var(--orange);margin:16px auto 0;border-radius:2px;}
+
+/* ── MARQUEE ── */
+.marquee-section{background:var(--orange);padding:16px 0;overflow:hidden;}
+.marquee-track{display:flex;gap:56px;animation:marquee 22s linear infinite;white-space:nowrap;}
+.marquee-item{display:flex;align-items:center;gap:14px;font-weight:700;color:#fff;font-size:.88rem;flex-shrink:0;}
+.marquee-dot{width:5px;height:5px;background:rgba(255,255,255,.5);border-radius:50%;}
+
+/* ── SERVICES ── */
+.services-section{padding:90px 80px;background:var(--bg);}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.service-card{background:var(--card-bg);padding:44px 32px;position:relative;overflow:hidden;transition:all .4s;cursor:pointer;border:1px solid var(--card-border);}
+.service-card::before{content:'';position:absolute;bottom:0;left:0;width:0;height:3px;background:var(--orange);transition:width .4s;}
+.service-card:hover::before{width:100%;}
+.service-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);background:#fff;}
+.service-icon{width:52px;height:52px;background:var(--orange-light);border:1.5px solid var(--orange-mid);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:22px;transition:all .4s;}
+.service-card:hover .service-icon{background:var(--orange);border-color:var(--orange);}
+.service-num{position:absolute;top:18px;left:22px;font-size:3.5rem;font-weight:900;color:rgba(249,115,22,.07);line-height:1;}
+.service-title{font-size:1.2rem;font-weight:800;margin-bottom:12px;color:var(--text);}
+.service-desc{font-size:.87rem;color:var(--text3);line-height:1.85;}
+.service-arrow{margin-top:22px;color:var(--orange);font-size:1.1rem;display:inline-block;transition:transform .3s;}
+.service-card:hover .service-arrow{transform:translateX(-8px);}
+
+/* ── PORTFOLIO FLIP CARDS ── */
+.portfolio-section{padding:90px 80px;background:var(--bg2);}
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+
+/* The card container */
+.pcard{height:340px;perspective:1000px;cursor:pointer;}
+.pcard-inner{
+  width:100%;height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .75s cubic-bezier(.4,0,.2,1);
+  border-radius:8px;
+}
+/* hover flip on desktop */
+.pcard:hover .pcard-inner{transform:rotateY(180deg);}
+/* touch flip via class */
+.pcard.flipped .pcard-inner{transform:rotateY(180deg);}
+
+.pcard-front,.pcard-back{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:8px;overflow:hidden;
+}
+.pcard-front{background-size:cover;background-position:center;}
+.pcard-front::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(26,10,0,.6) 0%,rgba(249,115,22,.15) 60%,transparent 100%);
+}
+.pcard-front-label{
+  position:absolute;bottom:20px;right:20px;
+  color:#fff;font-weight:800;font-size:1.05rem;z-index:1;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+.pcard-front-tag{
+  position:absolute;top:16px;left:16px;
+  background:var(--orange);color:#fff;font-size:.7rem;font-weight:700;
+  padding:4px 12px;border-radius:20px;z-index:1;
+}
+.pcard-back{
+  transform:rotateY(180deg);
+  background:linear-gradient(135deg,var(--orange-dark),var(--orange));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:32px 28px;text-align:center;
+}
+.pcard-back-icon{font-size:2.6rem;line-height:1;}
+.pcard-back-title{font-size:1.15rem;font-weight:900;color:#fff;}
+.pcard-back-desc{font-size:.85rem;color:rgba(255,255,255,.9);line-height:1.75;}
+.pcard-back-tag{
+  background:rgba(255,255,255,.2);color:#fff;
+  font-size:.72rem;font-weight:700;padding:5px 16px;
+  border-radius:20px;margin-top:4px;border:1px solid rgba(255,255,255,.3);
+}
+
+/* ── HOW WE WORK ── */
+.howwework-section{padding:90px 80px;background:var(--bg3);}
+.steps-grid{display:flex;gap:0;position:relative;}
+.steps-grid::before{content:'';position:absolute;top:36px;right:10%;left:10%;height:2px;background:linear-gradient(to left,transparent,var(--orange-mid),var(--orange-mid),transparent);}
+.step-item{flex:1;text-align:center;position:relative;z-index:1;padding:0 12px;}
+.step-num-wrap{width:72px;height:72px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.4rem;font-weight:900;color:#fff;border:4px solid #fff;box-shadow:0 4px 18px var(--orange-glow);transition:all .3s;}
+.step-item:hover .step-num-wrap{transform:scale(1.1);box-shadow:0 8px 28px var(--orange-glow);}
+.step-title{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:8px;}
+.step-desc{font-size:.82rem;color:var(--text3);line-height:1.7;}
+
+/* ── WHY US ── */
+.whyus-section{padding:90px 80px;background:var(--bg2);}
+.whyus-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;}
+.whyus-card{background:#fff;padding:40px 36px;border:1px solid var(--card-border);display:flex;gap:20px;align-items:flex-start;transition:all .4s;}
+.whyus-card:hover{border-color:var(--orange);transform:translateY(-3px);box-shadow:var(--shadow);}
+.whyus-icon{width:48px;height:48px;background:var(--orange-light);border:1.5px solid var(--orange-mid);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;transition:all .4s;}
+.whyus-card:hover .whyus-icon{background:var(--orange);border-color:var(--orange);}
+.whyus-title{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:8px;}
+.whyus-desc{font-size:.87rem;color:var(--text3);line-height:1.8;}
+
+/* ── ABOUT ── */
+.about-section{padding:90px 80px;background:var(--bg);display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.about-visual{position:relative;}
+.about-img-main{width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#ffe8d0,#ffd0a0);position:relative;overflow:hidden;border-radius:2px;}
+.about-img-main svg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;opacity:.35;}
+.about-img-accent{position:absolute;bottom:-22px;right:-22px;width:44%;aspect-ratio:1;background:var(--orange-light);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;}
+.about-badge{text-align:center;}
+.about-badge-num{font-size:2.8rem;font-weight:900;color:var(--orange);line-height:1;}
+.about-badge-text{font-size:.8rem;color:var(--text3);margin-top:5px;}
+.about-corner{position:absolute;top:-10px;left:-10px;width:46px;height:46px;border-top:3px solid var(--orange);border-right:3px solid var(--orange);}
+.about-content p{color:var(--text3);font-size:.97rem;line-height:1.95;margin-bottom:20px;}
+.about-features{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:32px;}
+.about-feat{display:flex;align-items:center;gap:10px;font-size:.88rem;font-weight:600;color:var(--text2);}
+.feat-dot{width:7px;height:7px;background:var(--orange);border-radius:50%;flex-shrink:0;}
+
+/* ── TESTIMONIALS ── */
+.testimonials-section{padding:90px 80px;background:var(--bg3);overflow:hidden;}
+.testimonials-track{display:flex;gap:22px;transition:transform .7s cubic-bezier(.4,0,.2,1);}
+.testimonial-card{flex-shrink:0;width:calc(33.333% - 15px);background:#fff;padding:34px;border:1px solid var(--card-border);transition:all .4s;border-radius:2px;box-shadow:var(--shadow);}
+.testimonial-card:hover{border-color:var(--orange);transform:translateY(-4px);box-shadow:0 8px 36px var(--orange-glow);}
+.quote-icon{font-size:2.8rem;color:var(--orange);line-height:1;margin-bottom:18px;opacity:.4;font-family:Georgia,serif;}
+.testimonial-text{font-size:.92rem;color:var(--text3);line-height:1.95;margin-bottom:26px;}
+.testimonial-author{display:flex;align-items:center;gap:12px;}
+.author-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--orange-dark),var(--orange));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;color:#fff;flex-shrink:0;}
+.author-name{font-weight:700;font-size:.92rem;color:var(--text);}
+.author-role{font-size:.75rem;color:var(--orange);margin-top:2px;}
+.stars{color:var(--orange);font-size:.8rem;margin-bottom:10px;}
+.test-nav{display:flex;justify-content:center;gap:10px;margin-top:38px;}
+.test-nav-btn{width:40px;height:40px;background:var(--orange-light);border:1.5px solid var(--orange-mid);color:var(--orange);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;font-size:.95rem;}
+.test-nav-btn:hover{background:var(--orange);color:#fff;border-color:var(--orange);}
+
+/* ── CTA ── */
+.cta-section{padding:90px 80px;background:var(--orange);text-align:center;position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(255,255,255,.1),transparent);}
+.cta-title{font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:900;color:#fff;margin-bottom:18px;position:relative;z-index:1;}
+.cta-sub{font-size:1rem;color:rgba(255,255,255,.85);margin-bottom:42px;position:relative;z-index:1;line-height:1.8;}
+.cta-btns{display:flex;gap:18px;justify-content:center;position:relative;z-index:1;flex-wrap:wrap;}
+.btn-cta-white{background:#fff;color:var(--orange);padding:13px 34px;font-family:'Cairo',sans-serif;font-weight:700;font-size:.95rem;border:none;cursor:pointer;text-decoration:none;display:inline-block;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:all .3s;}
+.btn-cta-white:hover{background:var(--text);color:#fff;transform:translateY(-2px);}
+.btn-cta-outline{background:transparent;color:#fff;padding:13px 34px;font-family:'Cairo',sans-serif;font-weight:600;font-size:.95rem;border:2px solid rgba(255,255,255,.6);cursor:pointer;text-decoration:none;display:inline-block;transition:all .3s;}
+.btn-cta-outline:hover{background:rgba(255,255,255,.15);border-color:#fff;transform:translateY(-2px);}
+.cta-check{margin-top:44px;display:flex;justify-content:center;gap:30px;flex-wrap:wrap;position:relative;z-index:1;}
+.cta-check-item{text-align:center;}
+.ck-icon{font-size:1.6rem;color:rgba(255,255,255,.9);}
+.ck-text{font-size:.8rem;color:rgba(255,255,255,.8);margin-top:3px;}
+
+/* ── FOOTER ── */
+footer{background:#fff8f0;padding:56px 80px 28px;border-top:1px solid var(--orange-mid);}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px;}
+.footer-logo{margin-bottom:18px;}
+.footer-logo img{height:46px;}
+.footer-desc{font-size:.87rem;color:var(--text3);line-height:1.85;margin-bottom:22px;}
+.social-links{display:flex;gap:10px;}
+.social-link{width:36px;height:36px;background:var(--orange-light);border:1px solid var(--orange-mid);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--orange);cursor:pointer;transition:all .3s;text-decoration:none;font-weight:700;}
+.social-link:hover{background:var(--orange);color:#fff;border-color:var(--orange);}
+.footer-title{font-size:.95rem;font-weight:800;margin-bottom:18px;color:var(--text);}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.footer-links a{color:var(--text3);text-decoration:none;font-size:.85rem;transition:color .3s;}
+.footer-links a:hover{color:var(--orange);}
+.footer-contact{display:flex;flex-direction:column;gap:11px;}
+.contact-item{display:flex;align-items:center;gap:9px;font-size:.85rem;color:var(--text3);}
+.contact-item span:first-child{color:var(--orange);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--text3);}
+.footer-powered{font-size:.75rem;color:var(--text3);opacity:.7;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+@keyframes scaleIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes loadFill{from{width:0%}to{width:100%}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:.1s;}
+.reveal-delay-2{transition-delay:.2s;}
+.reveal-delay-3{transition-delay:.3s;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  nav{padding:14px 32px;}
+  nav.scrolled{padding:10px 32px;}
+  .hero{padding:90px 40px 80px;}
+  .services-section,.whyus-section,.about-section,.testimonials-section,.cta-section,.howwework-section,.portfolio-section,footer{padding-left:40px;padding-right:40px;}
+  .services-grid{grid-template-columns:repeat(2,1fr);}
+  .portfolio-grid{grid-template-columns:repeat(2,1fr);}
+  .about-section{grid-template-columns:1fr;gap:36px;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .hero-rings{display:none;}
+  .testimonial-card{width:calc(50% - 11px);}
+  .steps-grid::before{display:none;}
+  .steps-grid{flex-wrap:wrap;gap:24px;}
+  .step-item{flex:none;width:calc(33.333% - 16px);}
+  .whyus-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:28px;}
+}
+@media(max-width:700px){
+  /* hide desktop nav items, show hamburger */
+  nav{padding:12px 20px;}
+  nav.scrolled{padding:10px 20px;}
+  .nav-right{display:none;}
+  .hamburger{display:flex;}
+  .mob-drawer{display:flex;}
+
+  .hero{padding:90px 22px 70px;}
+  .hero-stats{gap:18px;margin-top:36px;padding-top:24px;}
+  .stat-num{font-size:1.6rem;}
+
+  .services-section,.whyus-section,.about-section,.testimonials-section,
+  .cta-section,.howwework-section,.portfolio-section,footer{padding-left:20px;padding-right:20px;}
+
+  .services-grid{grid-template-columns:1fr;}
+  .portfolio-grid{grid-template-columns:1fr 1fr;gap:14px;}
+  .pcard{height:200px;}
+  .pcard-front-label{font-size:.85rem;bottom:12px;right:12px;}
+  .pcard-back-title{font-size:.95rem;}
+  .pcard-back-desc{font-size:.78rem;}
+  .pcard-back-icon{font-size:1.8rem;}
+  .pcard-back{padding:18px 14px;gap:8px;}
+
+  .whyus-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .testimonial-card{width:100%;}
+  .cta-btns{flex-direction:column;align-items:center;}
+  .footer-bottom{flex-direction:column;gap:8px;}
+  .step-item{width:100%;}
+  .steps-grid::before{display:none;}
+  .hero-btns{flex-direction:column;}
+  .btn-primary,.btn-outline{text-align:center;}
+}
+@media(max-width:400px){
+  .portfolio-grid{grid-template-columns:1fr;}
+  .pcard{height:250px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div class="loader" id="loader">
+  <img src="/mnt/user-data/uploads/1772935486844_WhatsApp_Image_2026-03-03_at_2_33_36_AM.jpeg" alt="logo" class="loader-logo" onerror="this.style.display='none'"/>
+  <div class="loader-name">ومضة أفق | WO</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<canvas id="particles-canvas"></canvas>
+
+<!-- ══════════════════ NAVBAR ══════════════════ -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <img src="/mnt/user-data/uploads/1772935486844_WhatsApp_Image_2026-03-03_at_2_33_36_AM.jpeg" alt="ومضة أفق"
+      onerror="this.outerHTML='<span style=&quot;font-size:1.3rem;font-weight:900;color:var(--orange)&quot;>WO | ومضة أفق</span>'"/>
+  </div>
+  <!-- Desktop nav -->
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#home"      data-ar="الرئيسية"    data-en="Home">الرئيسية</a></li>
+      <li><a href="#about"     data-ar="من نحن"       data-en="About">من نحن</a></li>
+      <li><a href="#services"  data-ar="خدماتنا"     data-en="Services">خدماتنا</a></li>
+      <li><a href="#howwework" data-ar="طريقة العمل"  data-en="How We Work">طريقة العمل</a></li>
+      <li><a href="#contact"   data-ar="تواصل معنا"   data-en="Contact">تواصل معنا</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-ar" onclick="setLang('ar')">العربية</button>
+      <button class="lang-btn"        id="btn-en" onclick="setLang('en')">English</button>
+    </div>
+    <a href="#contact" class="nav-cta" data-ar="اطلب عرض سعر" data-en="Get a Quote">اطلب عرض سعر</a>
+  </div>
+  <!-- Hamburger (mobile only) -->
+  <button class="hamburger" id="hamburger" aria-label="القائمة">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Drawer -->
+<div class="mob-drawer" id="mob-drawer">
+  <ul class="mob-nav-links">
+    <li><a href="#home"      data-ar="الرئيسية"    data-en="Home"        onclick="closeMob()">الرئيسية</a></li>
+    <li><a href="#about"     data-ar="من نحن"       data-en="About"       onclick="closeMob()">من نحن</a></li>
+    <li><a href="#services"  data-ar="خدماتنا"     data-en="Services"    onclick="closeMob()">خدماتنا</a></li>
+    <li><a href="#howwework" data-ar="طريقة العمل"  data-en="How We Work" onclick="closeMob()">طريقة العمل</a></li>
+    <li><a href="#contact"   data-ar="تواصل معنا"   data-en="Contact"     onclick="closeMob()">تواصل معنا</a></li>
+  </ul>
+  <div class="mob-bottom">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="mob-btn-ar" onclick="setLang('ar')">العربية</button>
+      <button class="lang-btn"        id="mob-btn-en" onclick="setLang('en')">English</button>
+    </div>
+    <a href="#contact" class="mob-cta" data-ar="اطلب عرض سعر" data-en="Get a Quote" onclick="closeMob()">اطلب عرض سعر</a>
+  </div>
+</div>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag" data-ar="✦ شريكك المتكامل للفعاليات" data-en="✦ Your Full-Service Events Partner">✦ شريكك المتكامل للفعاليات</div>
+    <h1 class="hero-title">
+      <span data-ar="نصنع" data-en="We Create">نصنع</span><br/>
+      <span class="highlight" data-ar="حضور" data-en="Your Event's">حضور</span><br/>
+      <span data-ar="الحدث" data-en="Presence">الحدث</span>
+    </h1>
+    <p class="hero-sub" data-ar="شريكك المتكامل لتخطيط وتنفيذ وتوثيق الفعاليات — من الفكرة حتى الأثر." data-en="Your integrated partner for planning, executing, and documenting events — from idea to impact.">
+      شريكك المتكامل لتخطيط وتنفيذ وتوثيق الفعاليات — من الفكرة حتى الأثر.
+    </p>
+    <div class="hero-btns">
+      <a href="#contact"  class="btn-primary" data-ar="اطلب عرض سعر"    data-en="Get a Quote">اطلب عرض سعر</a>
+      <a href="#services" class="btn-outline"  data-ar="استعرض خدماتنا"  data-en="Our Services">استعرض خدماتنا</a>
+    </div>
+    <!-- Stats below buttons -->
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num" data-target="300">0</div><div class="stat-label" data-ar="فعالية منجزة"    data-en="Events Done">فعالية منجزة</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="150">0</div><div class="stat-label" data-ar="عميل راضٍ"       data-en="Happy Clients">عميل راضٍ</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="6">0</div> <div class="stat-label" data-ar="خدمات متكاملة"   data-en="Integrated Services">خدمات متكاملة</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="1">0</div> <div class="stat-label" data-ar="شريك تنفيذ واحد" data-en="One Execution Partner">شريك تنفيذ واحد</div></div>
+    </div>
+  </div>
+  <div class="hero-rings">
+    <div class="ring"><div class="ring-dot"></div></div>
+    <div class="ring"><div class="ring-dot"></div></div>
+    <div class="ring"><div class="ring-dot"></div></div>
+    <div class="ring"><div class="ring-dot"></div></div>
+    <div class="hero-cam-center">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="28" stroke="#f97316" stroke-width="2" opacity=".7"/>
+        <circle cx="32" cy="32" r="18" stroke="#f97316" stroke-width="1.5" opacity=".5"/>
+        <circle cx="32" cy="32" r="8" fill="#f97316" opacity=".85"/>
+        <path d="M32 8 C40 14 56 14 56 32" stroke="#f97316" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      </svg>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span data-ar="اكتشف" data-en="Scroll">اكتشف</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="التصوير والتوثيق"     data-en="Photography & Documentation">التصوير والتوثيق</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="تصميم الهوية البصرية"  data-en="Visual Identity Design">تصميم الهوية البصرية</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="الطباعة الدعائية"      data-en="Promotional Printing">الطباعة الدعائية</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="إدارة السوشيال ميديا"  data-en="Social Media Management">إدارة السوشيال ميديا</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="صفحات الهبوط"          data-en="Landing Pages">صفحات الهبوط</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="تجهيز مواد الحدث"      data-en="Event Materials Prep">تجهيز مواد الحدث</span></div>
+    <!-- duplicate for seamless loop -->
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="التصوير والتوثيق"     data-en="Photography & Documentation">التصوير والتوثيق</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="تصميم الهوية البصرية"  data-en="Visual Identity Design">تصميم الهوية البصرية</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="الطباعة الدعائية"      data-en="Promotional Printing">الطباعة الدعائية</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="إدارة السوشيال ميديا"  data-en="Social Media Management">إدارة السوشيال ميديا</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="صفحات الهبوط"          data-en="Landing Pages">صفحات الهبوط</span></div>
+    <div class="marquee-item"><span class="marquee-dot"></span><span data-ar="تجهيز مواد الحدث"      data-en="Event Materials Prep">تجهيز مواد الحدث</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════ SERVICES ══════════════════ -->
+<section class="services-section" id="services">
+  <div class="section-header reveal">
+    <span class="section-tag" data-ar="✦ ما نقدمه" data-en="✦ What We Offer">✦ ما نقدمه</span>
+    <h2 class="section-title"><span data-ar="خدماتنا " data-en="Our ">خدماتنا </span><span data-ar="المتكاملة" data-en="Integrated Services">المتكاملة</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">01</div><div class="service-icon">📸</div>
+      <div class="service-title" data-ar="التصوير والتوثيق الاحترافي" data-en="Professional Photography & Documentation">التصوير والتوثيق الاحترافي</div>
+      <div class="service-desc" data-ar="نوثّق كل تفصيلة من فعاليتك بأعلى جودة ممكنة — صور وفيديو احترافي يبقي أثر حدثك حياً." data-en="We document every detail of your event with the highest quality — professional photos and videos that keep your event alive.">نوثّق كل تفصيلة من فعاليتك بأعلى جودة ممكنة — صور وفيديو احترافي يبقي أثر حدثك حياً.</div>
+      <div class="service-arrow">←</div>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">02</div><div class="service-icon">🎨</div>
+      <div class="service-title" data-ar="تصميم الهوية البصرية للفعالية" data-en="Event Visual Identity Design">تصميم الهوية البصرية للفعالية</div>
+      <div class="service-desc" data-ar="نصمم هوية بصرية متكاملة ومميزة لفعاليتك تعكس قيمها وتترك انطباعاً لا يُنسى لدى الحضور." data-en="We design a complete, distinctive visual identity that reflects your event's values and leaves an unforgettable impression.">نصمم هوية بصرية متكاملة ومميزة لفعاليتك تعكس قيمها وتترك انطباعاً لا يُنسى لدى الحضور.</div>
+      <div class="service-arrow">←</div>
+    </div>
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-num">03</div><div class="service-icon">🖨️</div>
+      <div class="service-title" data-ar="الطباعة الدعائية والهدايا التذكارية" data-en="Promotional Printing & Branded Gifts">الطباعة الدعائية والهدايا التذكارية</div>
+      <div class="service-desc" data-ar="نوفر جميع مواد الطباعة الدعائية وهدايا تذكارية مخصصة تعزز حضور علامتك التجارية في الحدث." data-en="We provide all printed promotional materials and custom branded gifts that strengthen your brand presence at the event.">نوفر جميع مواد الطباعة الدعائية وهدايا تذكارية مخصصة تعزز حضور علامتك التجارية في الحدث.</div>
+      <div class="service-arrow">←</div>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">04</div><div class="service-icon">📱</div>
+      <div class="service-title" data-ar="إدارة السوشيال ميديا والتغطية" data-en="Social Media Management & Coverage">إدارة السوشيال ميديا والتغطية</div>
+      <div class="service-desc" data-ar="نتولى التغطية الرقمية الكاملة قبل الحدث وأثناءه وبعده، ونبني لك حضوراً رقمياً يعكس قيمة الفعالية." data-en="We handle full digital coverage before, during, and after the event, building a digital presence that reflects its value.">نتولى التغطية الرقمية الكاملة قبل الحدث وأثناءه وبعده، ونبني لك حضوراً رقمياً يعكس قيمة الفعالية.</div>
+      <div class="service-arrow">←</div>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">05</div><div class="service-icon">🌐</div>
+      <div class="service-title" data-ar="إنشاء صفحات الهبوط والحملات" data-en="Landing Pages & Campaign Creation">إنشاء صفحات الهبوط والحملات</div>
+      <div class="service-desc" data-ar="نبني صفحات هبوط احترافية وحملات رقمية مخصصة لفعاليتك تجذب الجمهور المستهدف وتحقق الأثر المطلوب." data-en="We build professional landing pages and custom digital campaigns that attract your target audience and achieve the desired impact.">نبني صفحات هبوط احترافية وحملات رقمية مخصصة لفعاليتك تجذب الجمهور المستهدف وتحقق الأثر المطلوب.</div>
+      <div class="service-arrow">←</div>
+    </div>
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-num">06</div><div class="service-icon">📦</div>
+      <div class="service-title" data-ar="تجهيز كامل مواد الحدث" data-en="Full Event Materials Preparation">تجهيز كامل مواد الحدث</div>
+      <div class="service-desc" data-ar="نتكفل بتجهيز وتوريد جميع مواد الحدث من البداية للنهاية، حتى تتفرغ أنت للفعالية ولا تقلق بشأن التفاصيل." data-en="We handle the preparation and supply of all event materials from start to finish, so you can focus on the event itself.">نتكفل بتجهيز وتوريد جميع مواد الحدث من البداية للنهاية، حتى تتفرغ أنت للفعالية ولا تقلق بشأن التفاصيل.</div>
+      <div class="service-arrow">←</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ PORTFOLIO FLIP CARDS ══════════════════ -->
+<section class="portfolio-section" id="portfolio">
+  <div class="section-header reveal">
+    <span class="section-tag" data-ar="✦ من أعمالنا" data-en="✦ Our Work">✦ من أعمالنا</span>
+    <h2 class="section-title">
+      <span data-ar="فعاليات " data-en="Events We ">فعاليات </span><span data-ar="نفخر بها" data-en="Are Proud Of">نفخر بها</span>
+    </h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="portfolio-grid">
+
+    <!-- Card 1 -->
+    <div class="pcard reveal reveal-delay-1">
+      <div class="pcard-inner">
+        <div class="pcard-front" style="background:linear-gradient(135deg,#f97316 0%,#fbbf80 50%,#ffe4c0 100%);">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.13;">
+            <svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" stroke="#fff" stroke-width="2.5" fill="none"/><circle cx="100" cy="100" r="48" stroke="#fff" stroke-width="1.5" fill="none"/><circle cx="100" cy="100" r="20" fill="#fff" opacity=".5"/></svg>
+          </div>
+          <div class="pcard-front-tag" data-ar="فعاليات الأعمال" data-en="Business Events">فعاليات الأعمال</div>
+          <div class="pcard-front-label" data-ar="ملتقى الأعمال السنوي" data-en="Annual Business Forum">ملتقى الأعمال السنوي</div>
+        </div>
+        <div class="pcard-back">
+          <div class="pcard-back-icon">🤝</div>
+          <div class="pcard-back-title" data-ar="ملتقى الأعمال السنوي" data-en="Annual Business Forum">ملتقى الأعمال السنوي</div>
+          <div class="pcard-back-desc" data-ar="تغطية وتوثيق كامل — هوية بصرية، توثيق احترافي، طباعة، وإدارة سوشيال ميديا." data-en="Full coverage — visual identity, professional documentation, printing, and social media management.">تغطية وتوثيق كامل — هوية بصرية، توثيق احترافي، طباعة، وإدارة سوشيال ميديا.</div>
+          <div class="pcard-back-tag" data-ar="فعاليات الأعمال" data-en="Business Events">فعاليات الأعمال</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="pcard reveal reveal-delay-2">
+      <div class="pcard-inner">
+        <div class="pcard-front" style="background:linear-gradient(135deg,#fde8c8 0%,#f9a030 50%,#c2410c 100%);">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.13;">
+            <svg width="200" height="200" viewBox="0 0 200 200"><rect x="25" y="25" width="150" height="150" stroke="#fff" stroke-width="2.5" fill="none"/><rect x="60" y="60" width="80" height="80" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+          </div>
+          <div class="pcard-front-tag" data-ar="إطلاق منتجات" data-en="Product Launches">إطلاق منتجات</div>
+          <div class="pcard-front-label" data-ar="حفل إطلاق منتج" data-en="Product Launch Event">حفل إطلاق منتج</div>
+        </div>
+        <div class="pcard-back">
+          <div class="pcard-back-icon">🚀</div>
+          <div class="pcard-back-title" data-ar="حفل إطلاق منتج" data-en="Product Launch Event">حفل إطلاق منتج</div>
+          <div class="pcard-back-desc" data-ar="تجهيز مواد الحدث، الهوية البصرية، التوثيق، وصفحة هبوط مخصصة — كل شيء من جهة واحدة." data-en="Event materials, visual identity, documentation, and a custom landing page — everything from one source.">تجهيز مواد الحدث، الهوية البصرية، التوثيق، وصفحة هبوط مخصصة — كل شيء من جهة واحدة.</div>
+          <div class="pcard-back-tag" data-ar="إطلاق منتجات" data-en="Product Launches">إطلاق منتجات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="pcard reveal reveal-delay-3">
+      <div class="pcard-inner">
+        <div class="pcard-front" style="background:linear-gradient(135deg,#fff0d0 0%,#f9a830 50%,#ea580c 100%);">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.13;">
+            <svg width="200" height="200" viewBox="0 0 200 200"><polygon points="100,15 185,160 15,160" stroke="#fff" stroke-width="2.5" fill="none"/><polygon points="100,52 155,148 45,148" stroke="#fff" stroke-width="1" fill="none"/></svg>
+          </div>
+          <div class="pcard-front-tag" data-ar="مؤتمرات" data-en="Conferences">مؤتمرات</div>
+          <div class="pcard-front-label" data-ar="مؤتمر الابتكار والتقنية" data-en="Innovation & Tech Conference">مؤتمر الابتكار والتقنية</div>
+        </div>
+        <div class="pcard-back">
+          <div class="pcard-back-icon">💡</div>
+          <div class="pcard-back-title" data-ar="مؤتمر الابتكار والتقنية" data-en="Innovation & Tech Conference">مؤتمر الابتكار والتقنية</div>
+          <div class="pcard-back-desc" data-ar="حضور رقمي متكامل، تغطية مباشرة، هدايا تذكارية مخصصة، وتوثيق احترافي كامل." data-en="Full digital presence, live coverage, custom branded gifts, and complete professional documentation.">حضور رقمي متكامل، تغطية مباشرة، هدايا تذكارية مخصصة، وتوثيق احترافي كامل.</div>
+          <div class="pcard-back-tag" data-ar="مؤتمرات" data-en="Conferences">مؤتمرات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="pcard reveal reveal-delay-1">
+      <div class="pcard-inner">
+        <div class="pcard-front" style="background:linear-gradient(135deg,#fde4c0 0%,#f89020 50%,#b45309 100%);">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.13;">
+            <svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="70" stroke="#fff" stroke-width="2.5" fill="none" stroke-dasharray="12 6"/><circle cx="100" cy="100" r="35" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+          </div>
+          <div class="pcard-front-tag" data-ar="احتفاليات" data-en="Celebrations">احتفاليات</div>
+          <div class="pcard-front-label" data-ar="حفل تكريم وتخرج" data-en="Honors & Graduation Ceremony">حفل تكريم وتخرج</div>
+        </div>
+        <div class="pcard-back">
+          <div class="pcard-back-icon">🎓</div>
+          <div class="pcard-back-title" data-ar="حفل تكريم وتخرج" data-en="Honors & Graduation Ceremony">حفل تكريم وتخرج</div>
+          <div class="pcard-back-desc" data-ar="طباعة شهادات، هدايا تذكارية، تصوير احترافي، وتغطية كاملة لكل لحظة تكريم." data-en="Certificate printing, branded gifts, professional photography, and full coverage of every honorable moment.">طباعة شهادات، هدايا تذكارية، تصوير احترافي، وتغطية كاملة لكل لحظة تكريم.</div>
+          <div class="pcard-back-tag" data-ar="احتفاليات" data-en="Celebrations">احتفاليات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="pcard reveal reveal-delay-2">
+      <div class="pcard-inner">
+        <div class="pcard-front" style="background:linear-gradient(135deg,#ffe8c8 0%,#f99820 50%,#d97706 100%);">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.13;">
+            <svg width="200" height="200" viewBox="0 0 200 200"><rect x="12" y="45" width="176" height="120" rx="10" stroke="#fff" stroke-width="2.5" fill="none"/><line x1="12" y1="75" x2="188" y2="75" stroke="#fff" stroke-width="1.5"/><circle cx="38" cy="60" r="7" fill="#fff" opacity=".6"/></svg>
+          </div>
+          <div class="pcard-front-tag" data-ar="معارض" data-en="Exhibitions">معارض</div>
+          <div class="pcard-front-label" data-ar="معرض الابتكار 2025" data-en="Innovation Expo 2025">معرض الابتكار 2025</div>
+        </div>
+        <div class="pcard-back">
+          <div class="pcard-back-icon">🏛️</div>
+          <div class="pcard-back-title" data-ar="معرض الابتكار 2025" data-en="Innovation Expo 2025">معرض الابتكار 2025</div>
+          <div class="pcard-back-desc" data-ar="صفحة هبوط مخصصة، إدارة سوشيال ميديا، مواد طباعة، وتغطية ميدانية شاملة." data-en="Custom landing page, social media management, printed materials, and comprehensive field coverage.">صفحة هبوط مخصصة، إدارة سوشيال ميديا، مواد طباعة، وتغطية ميدانية شاملة.</div>
+          <div class="pcard-back-tag" data-ar="معارض" data-en="Exhibitions">معارض</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="pcard reveal reveal-delay-3">
+      <div class="pcard-inner">
+        <div class="pcard-front" style="background:linear-gradient(135deg,#fff4e0 0%,#f9b830 50%,#c2410c 100%);">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.13;">
+            <svg width="200" height="200" viewBox="0 0 200 200"><path d="M100 20 C130 20 175 55 175 100 C175 145 130 180 100 180 C70 180 25 145 25 100 C25 55 70 20 100 20Z" stroke="#fff" stroke-width="2.5" fill="none"/><circle cx="100" cy="100" r="32" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+          </div>
+          <div class="pcard-front-tag" data-ar="مناسبات وطنية" data-en="National Events">مناسبات وطنية</div>
+          <div class="pcard-front-label" data-ar="حفل اليوم الوطني" data-en="National Day Celebration">حفل اليوم الوطني</div>
+        </div>
+        <div class="pcard-back">
+          <div class="pcard-back-icon">🎉</div>
+          <div class="pcard-back-title" data-ar="حفل اليوم الوطني" data-en="National Day Celebration">حفل اليوم الوطني</div>
+          <div class="pcard-back-desc" data-ar="هوية بصرية وطنية، هدايا مخصصة، توثيق وتغطية رقمية متكاملة للحدث الكبير." data-en="National visual identity, custom gifts, and full digital documentation and coverage for the big event.">هوية بصرية وطنية، هدايا مخصصة، توثيق وتغطية رقمية متكاملة للحدث الكبير.</div>
+          <div class="pcard-back-tag" data-ar="مناسبات وطنية" data-en="National Events">مناسبات وطنية</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════ HOW WE WORK ══════════════════ -->
+<section class="howwework-section" id="howwework">
+  <div class="section-header reveal">
+    <span class="section-tag" data-ar="✦ كيف نعمل" data-en="✦ How We Work">✦ كيف نعمل</span>
+    <h2 class="section-title"><span data-ar="طريقة " data-en="Our ">طريقة </span><span data-ar="العمل" data-en="Process">العمل</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="steps-grid reveal">
+    <div class="step-item">
+      <div class="step-num-wrap">1</div>
+      <div class="step-title" data-ar="فهم الحدث والأهداف" data-en="Understand the Event & Goals">فهم الحدث والأهداف</div>
+      <div class="step-desc" data-ar="نبدأ بالاستماع لك وفهم رؤيتك وأهداف الفعالية بشكل كامل." data-en="We start by listening to you and fully understanding your vision and event goals.">نبدأ بالاستماع لك وفهم رؤيتك وأهداف الفعالية بشكل كامل.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num-wrap">2</div>
+      <div class="step-title" data-ar="تصميم الهوية والخطة" data-en="Design Identity & Plan">تصميم الهوية والخطة</div>
+      <div class="step-desc" data-ar="نصمم الهوية البصرية ونضع خطة تنفيذية متكاملة لكل عناصر الفعالية." data-en="We design the visual identity and create a comprehensive execution plan for all event elements.">نصمم الهوية البصرية ونضع خطة تنفيذية متكاملة لكل عناصر الفعالية.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num-wrap">3</div>
+      <div class="step-title" data-ar="تنفيذ وتجهيز المواد" data-en="Execute & Prepare Materials">تنفيذ وتجهيز المواد</div>
+      <div class="step-desc" data-ar="ننفذ جميع المواد المطلوبة من طباعة وهدايا وتجهيزات رقمية وفق أعلى معايير الجودة." data-en="We execute all required materials — printing, gifts, and digital assets — to the highest quality standards.">ننفذ جميع المواد المطلوبة من طباعة وهدايا وتجهيزات رقمية وفق أعلى معايير الجودة.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num-wrap">4</div>
+      <div class="step-title" data-ar="التغطية والتوثيق" data-en="Coverage & Documentation">التغطية والتوثيق</div>
+      <div class="step-desc" data-ar="نحضر يوم الفعالية لنوثق كل لحظة ونغطيها رقمياً بشكل مباشر واحترافي." data-en="We attend the event day to document every moment and cover it digitally in real time.">نحضر يوم الفعالية لنوثق كل لحظة ونغطيها رقمياً بشكل مباشر واحترافي.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num-wrap">5</div>
+      <div class="step-title" data-ar="تسليم المخرجات" data-en="Deliver Final Outputs">تسليم المخرجات</div>
+      <div class="step-desc" data-ar="نسلم جميع المخرجات النهائية في الوقت المحدد — صور معدّلة، فيديو مونتج، محتوى رقمي جاهز." data-en="We deliver all final outputs on time — edited photos, edited videos, and ready digital content.">نسلم جميع المخرجات النهائية في الوقت المحدد — صور معدّلة، فيديو مونتج، محتوى رقمي جاهز.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ WHY US ══════════════════ -->
+<section class="whyus-section" id="whyus">
+  <div class="section-header reveal">
+    <span class="section-tag" data-ar="✦ مميزاتنا" data-en="✦ Why Choose Us">✦ مميزاتنا</span>
+    <h2 class="section-title"><span data-ar="لماذا " data-en="Why ">لماذا </span><span data-ar="نحن؟" data-en="Us?">نحن؟</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="whyus-grid reveal">
+    <div class="whyus-card">
+      <div class="whyus-icon">🔗</div>
+      <div>
+        <div class="whyus-title" data-ar="حل متكامل بدل عدة موردين" data-en="One Integrated Solution">حل متكامل بدل عدة موردين</div>
+        <div class="whyus-desc" data-ar="نحن الشريك الوحيد الذي تحتاجه — بدلاً من التعامل مع موردين متعددين، نختصر عليك كل ذلك في جهة واحدة متكاملة." data-en="We are the only partner you need — instead of dealing with multiple vendors, we bring everything together in one integrated source.">نحن الشريك الوحيد الذي تحتاجه — بدلاً من التعامل مع موردين متعددين، نختصر عليك كل ذلك في جهة واحدة متكاملة.</div>
+      </div>
+    </div>
+    <div class="whyus-card">
+      <div class="whyus-icon">✅</div>
+      <div>
+        <div class="whyus-title" data-ar="جودة تنفيذ موحدة" data-en="Consistent Execution Quality">جودة تنفيذ موحدة</div>
+        <div class="whyus-desc" data-ar="لأن الفريق واحد، الجودة واحدة في كل عناصر فعاليتك من التصميم حتى التسليم — لا تباين ولا تشتت." data-en="Because the team is one, quality is consistent across every element of your event from design to delivery.">لأن الفريق واحد، الجودة واحدة في كل عناصر فعاليتك من التصميم حتى التسليم — لا تباين ولا تشتت.</div>
+      </div>
+    </div>
+    <div class="whyus-card">
+      <div class="whyus-icon">⚡</div>
+      <div>
+        <div class="whyus-title" data-ar="سرعة الاستجابة" data-en="Fast Response">سرعة الاستجابة</div>
+        <div class="whyus-desc" data-ar="نُدرك أن الفعاليات لها مواعيد صارمة، لذا سرعة الاستجابة والتسليم في الوقت المحدد هي من أولوياتنا الأساسية." data-en="We understand events have strict deadlines, so fast response and on-time delivery are among our top priorities.">نُدرك أن الفعاليات لها مواعيد صارمة، لذا سرعة الاستجابة والتسليم في الوقت المحدد هي من أولوياتنا الأساسية.</div>
+      </div>
+    </div>
+    <div class="whyus-card">
+      <div class="whyus-icon">🎯</div>
+      <div>
+        <div class="whyus-title" data-ar="فريق إبداعي وتنفيذي واحد" data-en="One Creative & Execution Team">فريق إبداعي وتنفيذي واحد</div>
+        <div class="whyus-desc" data-ar="يجمع فريقنا بين الإبداع والتنفيذ في آنٍ واحد — مما يعني رؤية متماسكة وتنسيق أفضل من أول يوم حتى آخر تسليم." data-en="Our team combines creativity and execution simultaneously — a cohesive vision and better coordination from day one to final delivery.">يجمع فريقنا بين الإبداع والتنفيذ في آنٍ واحد — مما يعني رؤية متماسكة وتنسيق أفضل من أول يوم حتى آخر تسليم.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ ABOUT ══════════════════ -->
+<section class="about-section" id="about">
+  <div class="about-visual reveal">
+    <div class="about-img-main">
+      <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="35" stroke="#f97316" stroke-width="1.5"/><circle cx="40" cy="40" r="22" stroke="#f97316" stroke-width="1"/><circle cx="40" cy="40" r="10" fill="#f97316" opacity=".5"/><path d="M40 5L40 18M40 62L40 75M5 40L18 40M62 40L75 40" stroke="#f97316" stroke-width="1.5"/></svg>
+    </div>
+    <div class="about-img-accent">
+      <div class="about-badge">
+        <div class="about-badge-num">1</div>
+        <div class="about-badge-text" data-ar="شريك تنفيذ واحد" data-en="Single Partner">شريك تنفيذ واحد</div>
+      </div>
+    </div>
+    <div class="about-corner"></div>
+  </div>
+  <div class="about-content reveal reveal-delay-2">
+    <span class="section-tag" data-ar="✦ من نحن" data-en="✦ About Us">✦ من نحن</span>
+    <h2 class="section-title" style="text-align:right;margin-bottom:22px;"><span data-ar="ومضة أفق " data-en="Wamdat Ufuq ">ومضة أفق </span><span>| WO</span></h2>
+    <p data-ar="ومضة أفق شركة متخصصة في صناعة حضور الفعاليات عبر حلول متكاملة تجمع بين التوثيق والإنتاج والطباعة والتجهيز الرقمي." data-en="Wamdat Ufuq is a company specialized in creating event presence through integrated solutions combining documentation, production, printing, and digital preparation.">ومضة أفق شركة متخصصة في صناعة حضور الفعاليات عبر حلول متكاملة تجمع بين التوثيق والإنتاج والطباعة والتجهيز الرقمي.</p>
+    <p data-ar="نعمل كشريك تنفيذ واحد يختصر على العميل تعدد الموردين ويضمن اتساق الجودة في كل تفصيلة من تفاصيل الفعالية." data-en="We work as a single execution partner that saves the client from dealing with multiple vendors and guarantees consistent quality in every detail of the event.">نعمل كشريك تنفيذ واحد يختصر على العميل تعدد الموردين ويضمن اتساق الجودة في كل تفصيلة من تفاصيل الفعالية.</p>
+    <div class="about-features">
+      <div class="about-feat"><div class="feat-dot"></div><span data-ar="توثيق احترافي" data-en="Professional Documentation">توثيق احترافي</span></div>
+      <div class="about-feat"><div class="feat-dot"></div><span data-ar="إنتاج متكامل" data-en="Integrated Production">إنتاج متكامل</span></div>
+      <div class="about-feat"><div class="feat-dot"></div><span data-ar="طباعة دعائية" data-en="Promotional Printing">طباعة دعائية</span></div>
+      <div class="about-feat"><div class="feat-dot"></div><span data-ar="تجهيز رقمي" data-en="Digital Preparation">تجهيز رقمي</span></div>
+      <div class="about-feat"><div class="feat-dot"></div><span data-ar="جهة واحدة فقط" data-en="One Single Source">جهة واحدة فقط</span></div>
+      <div class="about-feat"><div class="feat-dot"></div><span data-ar="اتساق الجودة" data-en="Quality Consistency">اتساق الجودة</span></div>
+    </div>
+    <div style="margin-top:32px;">
+      <a href="#contact" class="btn-primary" data-ar="ابدأ فعاليتك معنا" data-en="Start Your Event With Us">ابدأ فعاليتك معنا</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ TESTIMONIALS ══════════════════ -->
+<section class="testimonials-section" id="testimonials">
+  <div class="section-header reveal">
+    <span class="section-tag" data-ar="✦ آراء عملائنا" data-en="✦ Client Reviews">✦ آراء عملائنا</span>
+    <h2 class="section-title"><span data-ar="ماذا يقولون " data-en="What They Say ">ماذا يقولون </span><span data-ar="عنّا؟" data-en="About Us?">عنّا؟</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div style="overflow:hidden;">
+    <div class="testimonials-track" id="testimonials-track">
+      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="quote-icon">"</div><div class="testimonial-text" data-ar="أفضل قرار اتخذناه لفعاليتنا كان التعامل مع ومضة أفق — فريق واحد أنجز كل شيء باحترافية عالية ووفّر علينا الوقت والجهد." data-en="The best decision we made for our event was working with Wamdat Ufuq — one team did everything professionally and saved us time and effort.">أفضل قرار اتخذناه لفعاليتنا كان التعامل مع ومضة أفق — فريق واحد أنجز كل شيء باحترافية عالية.</div><div class="testimonial-author"><div class="author-avatar">خ</div><div><div class="author-name" data-ar="خالد الزهراني" data-en="Khalid Al-Zahrani">خالد الزهراني</div><div class="author-role" data-ar="مدير فعاليات" data-en="Events Manager">مدير فعاليات</div></div></div></div>
+      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="quote-icon">"</div><div class="testimonial-text" data-ar="من الهوية البصرية للحملة الرقمية إلى التوثيق — كل شيء كان متسقاً ومتماسكاً. هذا ما يميز ومضة أفق عن غيرها." data-en="From visual identity to digital campaign to documentation — everything was consistent and cohesive. That's what sets Wamdat Ufuq apart.">من الهوية البصرية للحملة الرقمية إلى التوثيق — كل شيء كان متسقاً ومتماسكاً.</div><div class="testimonial-author"><div class="author-avatar">ر</div><div><div class="author-name" data-ar="ريم القحطاني" data-en="Reem Al-Qahtani">ريم القحطاني</div><div class="author-role" data-ar="مديرة تسويق" data-en="Marketing Director">مديرة تسويق</div></div></div></div>
+      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="quote-icon">"</div><div class="testimonial-text" data-ar="سرعة الاستجابة والتسليم في الوقت المحدد كانا مذهلين. أنجزوا في يومين ما كنت أتوقع أن يأخذ أسبوعاً كاملاً." data-en="The speed of response and on-time delivery were amazing. They completed in two days what I expected would take a full week.">سرعة الاستجابة والتسليم في الوقت المحدد كانا مذهلين. أنجزوا في يومين ما كنت أتوقع أن يأخذ أسبوعاً.</div><div class="testimonial-author"><div class="author-avatar">ع</div><div><div class="author-name" data-ar="عمر العتيبي" data-en="Omar Al-Otaibi">عمر العتيبي</div><div class="author-role" data-ar="منظم فعاليات" data-en="Event Organizer">منظم فعاليات</div></div></div></div>
+      <div class="testimonial-card"><div class="stars">★★★★★</div><div class="quote-icon">"</div><div class="testimonial-text" data-ar="الهدايا التذكارية التي صمموها وطبعوها كانت من أكثر ما أُشيد به من ضيوفنا. جودة عالية وتفاصيل رائعة." data-en="The branded gifts they designed and printed were the most praised item among our guests. High quality and wonderful details.">الهدايا التذكارية التي صمموها وطبعوها كانت من أكثر ما أُشيد به من ضيوفنا. جودة عالية وتفاصيل رائعة.</div><div class="testimonial-author"><div class="author-avatar">ن</div><div><div class="author-name" data-ar="نجلاء الدوسري" data-en="Najlaa Al-Dosari">نجلاء الدوسري</div><div class="author-role" data-ar="مديرة علاقات" data-en="Relations Manager">مديرة علاقات</div></div></div></div>
+    </div>
+  </div>
+  <div class="test-nav">
+    <button class="test-nav-btn" id="test-prev">&#8594;</button>
+    <button class="test-nav-btn" id="test-next">&#8592;</button>
+  </div>
+</section>
+
+<!-- ══════════════════ CTA ══════════════════ -->
+<section class="cta-section" id="contact">
+  <div class="reveal">
+    <span class="section-tag" style="color:rgba(255,255,255,.7)" data-ar="✦ ابدأ فعاليتك معنا" data-en="✦ Start Your Event With Us">✦ ابدأ فعاليتك معنا</span>
+    <h2 class="cta-title" data-ar="ابدأ فعاليتك معنا اليوم" data-en="Start Your Event With Us Today">ابدأ فعاليتك معنا اليوم</h2>
+    <p class="cta-sub" data-ar="شريكك المتكامل من الفكرة حتى الأثر — تواصل معنا الآن واحصل على عرض سعر مخصص لفعاليتك." data-en="Your integrated partner from idea to impact — contact us now and get a custom quote for your event.">شريكك المتكامل من الفكرة حتى الأثر — تواصل معنا الآن واحصل على عرض سعر مخصص لفعاليتك.</p>
+    <div class="cta-btns">
+      <a href="tel:0501741121"               class="btn-cta-white"   data-ar="📞  0501741121"          data-en="📞  0570904651">📞  0501741121</a>
+      <a href="https://wa.me/966501741121?text=السلام%20عليكم%20هل%20يمكنني%20الاستفسار%20عن%20خدماتكم"   class="btn-cta-outline" data-ar="✉️ راسلنا على واتس اب"  data-en="✉️ Email Us">✉️ راسلنا على واتس اب</a>
+    </div>
+    <div class="cta-check">
+      <div class="cta-check-item"><div class="ck-icon">✓</div><div class="ck-text" data-ar="حل متكامل"       data-en="Integrated Solution">حل متكامل</div></div>
+      <div class="cta-check-item"><div class="ck-icon">✓</div><div class="ck-text" data-ar="جودة موحدة"       data-en="Consistent Quality">جودة موحدة</div></div>
+      <div class="cta-check-item"><div class="ck-icon">✓</div><div class="ck-text" data-ar="تسليم في الموعد" data-en="On-Time Delivery">تسليم في الموعد</div></div>
+      <div class="cta-check-item"><div class="ck-icon">✓</div><div class="ck-text" data-ar="فريق واحد"        data-en="One Team">فريق واحد</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <img src="/mnt/user-data/uploads/1772935486844_WhatsApp_Image_2026-03-03_at_2_33_36_AM.jpeg" alt="ومضة أفق"
+          onerror="this.outerHTML='<span style=&quot;font-size:1.4rem;font-weight:900;color:var(--orange)&quot;>WO | ومضة أفق</span>'"/>
+      </div>
+      <p class="footer-desc" data-ar="حلول متكاملة للدعاية والإعلان وتنفيذ الفعاليات." data-en="Integrated solutions for advertising, marketing, and event execution.">حلول متكاملة للدعاية والإعلان وتنفيذ الفعاليات.</p>
+      <div class="social-links">
+        <a class="social-link" href=""><img src="/img/instagram.png" style="width: 100%;" alt=""></a>
+        <a class="social-link" href="#"><img src="/img/facebook.png" style="width: 100%;" alt=""></a>
+        <a class="social-link" href="#"><img src="/img/twitter.png" style="width: 100%;" alt=""></a>
+        <a class="social-link" href="#"><img src="/img/youtube.png" style="width: 100%;" alt=""></a>
+        <a class="social-link" href="#"><img src="/img/instagram.png" style="width: 100%;" alt=""></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-title" data-ar="روابط سريعة" data-en="Quick Links">روابط سريعة</div>
+      <ul class="footer-links">
+        <li><a href="#home"      data-ar="الرئيسية"   data-en="Home">الرئيسية</a></li>
+        <li><a href="#about"     data-ar="من نحن"      data-en="About">من نحن</a></li>
+        <li><a href="#services"  data-ar="خدماتنا"    data-en="Services">خدماتنا</a></li>
+        <li><a href="#howwework" data-ar="طريقة العمل" data-en="How We Work">طريقة العمل</a></li>
+        <li><a href="#whyus"     data-ar="لماذا نحن"   data-en="Why Us">لماذا نحن</a></li>
+        <li><a href="#contact"   data-ar="تواصل معنا"  data-en="Contact">تواصل معنا</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-title" data-ar="خدماتنا" data-en="Services">خدماتنا</div>
+      <ul class="footer-links">
+        <li><a href="#services" data-ar="التصوير والتوثيق"      data-en="Photography & Documentation">التصوير والتوثيق</a></li>
+        <li><a href="#services" data-ar="تصميم الهوية البصرية"   data-en="Visual Identity Design">تصميم الهوية البصرية</a></li>
+        <li><a href="#services" data-ar="الطباعة الدعائية"       data-en="Promotional Printing">الطباعة الدعائية</a></li>
+        <li><a href="#services" data-ar="إدارة السوشيال ميديا"   data-en="Social Media Management">إدارة السوشيال ميديا</a></li>
+        <li><a href="#services" data-ar="صفحات الهبوط والحملات" data-en="Landing Pages & Campaigns">صفحات الهبوط والحملات</a></li>
+        <li><a href="#services" data-ar="تجهيز مواد الحدث"       data-en="Event Materials Prep">تجهيز مواد الحدث</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-title" data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا</div>
+      <div class="footer-contact">
+        <div class="contact-item"><span>🌐</span><span>www.wamdatofuq.com</span></div>
+        <div class="contact-item"><span>📧</span><span>info@wamdatofuq.com</span></div>
+        <div class="contact-item"><span>📞</span><span>0501741121</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span data-ar="© 2026 ومضة أفق | WO. جميع الحقوق محفوظة." data-en="© 2026 Wamdat Ufuq | WO. All rights reserved.">© 2026 ومضة أفق | WO. جميع الحقوق محفوظة.</span>
+    <!-- <span class="footer-powered">Built under</span> -->
+  </div>
+</footer>
+
+<script>
+// ── LOADER ─────────────────────────────────────────────
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('hide'),2000));
+
+// ── PARTICLES ──────────────────────────────────────────
+const canvas=document.getElementById('particles-canvas'),ctx=canvas.getContext('2d');
+function resizeC(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}resizeC();window.addEventListener('resize',resizeC);
+const pts=Array.from({length:55},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.4+.3,dx:(Math.random()-.5)*.35,dy:(Math.random()-.5)*.35,o:Math.random()*.25+.06}));
+function drawP(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pts.forEach(p=>{p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>canvas.width)p.dx*=-1;if(p.y<0||p.y>canvas.height)p.dy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(249,115,22,${p.o})`;ctx.fill();});
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(249,115,22,${.032*(1-d/110)})`;ctx.lineWidth=.5;ctx.stroke();}}
+  requestAnimationFrame(drawP);
+}drawP();
+
+// ── NAVBAR SCROLL ──────────────────────────────────────
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50));
+
+// ── HAMBURGER MENU ─────────────────────────────────────
+const hamburger=document.getElementById('hamburger');
+const mobDrawer=document.getElementById('mob-drawer');
+function closeMob(){
+  hamburger.classList.remove('open');
+  mobDrawer.classList.remove('open');
+  document.body.style.overflow='';
+}
+hamburger.addEventListener('click',()=>{
+  const isOpen=hamburger.classList.toggle('open');
+  mobDrawer.classList.toggle('open',isOpen);
+  document.body.style.overflow=isOpen?'hidden':'';
+});
+// close if clicking backdrop area
+mobDrawer.addEventListener('click',e=>{if(e.target===mobDrawer)closeMob();});
+
+// ── LANGUAGE TOGGLE ────────────────────────────────────
+function setLang(lang){
+  const html=document.getElementById('html-root');
+  html.lang=lang; html.dir=lang==='ar'?'rtl':'ltr';
+  // sync all 4 buttons (2 desktop + 2 mobile)
+  ['btn-ar','mob-btn-ar'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.toggle('active',lang==='ar');});
+  ['btn-en','mob-btn-en'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.toggle('active',lang==='en');});
+  document.querySelectorAll('[data-'+lang+']').forEach(el=>{
+    const v=el.getAttribute('data-'+lang);if(!v)return;
+    if(v.includes('<'))el.innerHTML=v;else el.textContent=v;
+  });
+  document.body.style.fontFamily=lang==='en'?"'Montserrat','Cairo',sans-serif":"'Cairo','Tajawal',sans-serif";
+}
+
+// ── PORTFOLIO CARDS — touch flip ───────────────────────
+document.querySelectorAll('.pcard').forEach(card=>{
+  card.addEventListener('click',()=>{
+    if(window.matchMedia('(hover:none),(pointer:coarse)').matches){
+      // on touch: toggle flip; close others
+      const wasFlipped=card.classList.contains('flipped');
+      document.querySelectorAll('.pcard').forEach(c=>c.classList.remove('flipped'));
+      if(!wasFlipped) card.classList.add('flipped');
+    }
+  });
+});
+
+// ── TESTIMONIALS SLIDER ────────────────────────────────
+const tt=document.getElementById('testimonials-track');
+const tCards=tt.querySelectorAll('.testimonial-card');
+let tIdx=0;
+function pV(){return window.innerWidth<700?1:window.innerWidth<1100?2:3;}
+function updT(){
+  const cardW=tCards[0].getBoundingClientRect().width+22;
+  tt.style.transform=`translateX(${tIdx*cardW}px)`;
+}
+document.getElementById('test-next').addEventListener('click',()=>{tIdx=Math.max(tIdx-1,-(tCards.length-pV()));updT();});
+document.getElementById('test-prev').addEventListener('click',()=>{tIdx=Math.min(tIdx+1,0);updT();});
+
+// ── COUNTERS ───────────────────────────────────────────
+function animC(el){const t=parseInt(el.dataset.target),s=t/(2000/16);let c=0;const i=setInterval(()=>{c=Math.min(c+s,t);el.textContent=Math.round(c)+(t>1?'+':'');if(c>=t)clearInterval(i);},16);}
+let cStarted=false;
+const cObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting&&!cStarted){cStarted=true;document.querySelectorAll('.stat-num[data-target]').forEach(animC);}});},{threshold:.4});
+const hs=document.querySelector('.hero-stats');if(hs)cObs.observe(hs);
+
+// ── SCROLL REVEAL ──────────────────────────────────────
+const rObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');rObs.unobserve(x.target);}});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+// ── CLICK SPARK ────────────────────────────────────────
+document.addEventListener('click',e=>{
+  const s=document.createElement('div');
+  s.style.cssText=`position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:16px;height:16px;border-radius:50%;pointer-events:none;z-index:9999;background:radial-gradient(circle,rgba(249,115,22,.7),transparent);transform:translate(-50%,-50%) scale(0);animation:spk .4s ease forwards;`;
+  document.body.appendChild(s);setTimeout(()=>s.remove(),400);
+});
+const ss=document.createElement('style');
+ss.textContent='@keyframes spk{0%{transform:translate(-50%,-50%) scale(0);opacity:1}100%{transform:translate(-50%,-50%) scale(3.5);opacity:0}}@keyframes loadFill{from{width:0%}to{width:100%}}@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}@keyframes scaleIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}';
+document.head.appendChild(ss);
+</script>
+</body>
+</html>
